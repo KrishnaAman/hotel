@@ -24,6 +24,6 @@ const bookingSchema = new mongoose.Schema({
 
 },{timestamps:true})
 
-const Booking = mongoose.model("Hotel",bookingSchema)
+const Booking = mongoose.model("Booking",bookingSchema)
 
 export default Booking ;
