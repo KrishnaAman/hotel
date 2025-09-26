@@ -1,3 +1,5 @@
+import Hotel from "../models/Hotel.js";
+
 export const getUserData = async (req,res)=>{
     try{
         const role = req.user.role;
@@ -31,3 +33,17 @@ export const storeRecentSearchedCities = async (req,res)=>{
     }
 }
 
+
+
+export const checkHotelOwnership = async (req, res) => {
+    // req.user.id is set by your 'protect' middleware after successful authentication
+    const userId = req.user._id; 
+
+    const hotel = await Hotel.findOne({ owner: userId });
+
+    if (hotel) {
+        res.status(200).json({ success: true, isOwner: true });
+    } else {
+        res.status(200).json({ success: true, isOwner: false });
+    }
+};

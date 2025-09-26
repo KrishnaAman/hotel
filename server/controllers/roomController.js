@@ -8,7 +8,7 @@ export const createRoom = async (req,res)=>{
     const {roomType, pricePerNight,amenities} = req.body;
     const hotel = await Hotel.findOne({owner:req.auth.userId})
 
-    if(!Hotel) return res.json({success:false,message:"No Hotel Found"})
+    if(!hotel) return res.json({success:false,message:"No Hotel Found"})
         //image
 
     const uploadImages = req.files.map(async(file)=>{
@@ -16,10 +16,10 @@ export const createRoom = async (req,res)=>{
        return response.secure_url;
     })
 
-    await Promise.all(uploadImages)
+    const images =await Promise.all(uploadImages)
 
     await Room.create({
-        hotel:hotel_id,
+        hotel:hotel._id,
         roomType,
         pricePerNight: +pricePerNight,
         amenities:JSON.parse(amenities),
@@ -59,10 +59,13 @@ export const getRooms = async (req,res)=>{
 
 
 export const getOwnerRooms = async (req,res)=>{
+
+    const {userId} = req.auth();
+
     try{
-        const hotelData = await Hotel({owner:req.auth.userId})
-        const rooms = await Room.find({hotel:hotelData._id.toString()}.populate("hotel"))
-        res.json({success:rooms})
+        const hotelData = await Hotel.findOne({owner:userId})
+        const rooms = await Room.find({ hotel: hotelData._id.toString() }).populate("hotel");
+        res.json({success:true,rooms})
 
     }catch(error){
           res.json({success:false,message:error.message})
